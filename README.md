@@ -25,3 +25,12 @@ Subcarrier spacing = 50000 Hz
 Amount Active Subcarriers = 448
 First Subcarrier Frequency = 15025000
 Last Subcarrier Frequency = 37425000
+
+
+# set-pnm-ofdmarxmer-meas
+
+There is also a small script to help you do the snmpset commands to get the OfdmaRxMer PNM measurement started.
+pretty straight forward. Just run it and it will do the snmpsets for you.
+
+./set-pnm-ofdmarxmer-meas <CCAP-NAME> <MODEM MAC> <IFINDEX> <SNMP RW COMMUNITY STRING>
+
