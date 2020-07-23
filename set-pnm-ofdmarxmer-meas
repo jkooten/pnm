@@ -1,0 +1,25 @@
+#!/usr/bin/perl
+
+use strict;
+
+my $commstring = $ARGV[3];
+my $mac= $ARGV[1];
+my $ifindex = $ARGV[2];
+my $ccap = $ARGV[0];
+my $datetime = "1106201220";
+my $pnmfilename = join "", "PNMCcapRxMER", "_", $ccap, "_", $mac, "_", $datetime;
+
+print $mac,"\n"; print $ccap,"\n"; print $datetime,"\n"; print $pnmfilename,"\n";
+
+#if ($#ARGV =! 3) {
+# print "Need three(!!) arguments, \n";
+# print "$0 <CCAP-NAME> <MODEM MAC> <IFINDEX> \n";
+#exit;
+#}
+
+system("/usr/bin/snmpset -v2c -c $commstring $ccap 1.3.6.1.4.1.4491.2.1.27.1.3.7.1.2.$ifindex x $mac");
+system("/usr/bin/snmpset -v2c -c $commstring $ccap 1.3.6.1.4.1.4491.2.1.27.1.3.7.1.3.$ifindex i 1");
+system("/usr/bin/snmpset -v2c -c $commstring $ccap 1.3.6.1.4.1.4491.2.1.27.1.3.7.1.4.$ifindex u 10");
+system("/usr/bin/snmpset -v2c -c $commstring $ccap 1.3.6.1.4.1.4491.2.1.27.1.3.7.1.6.$ifindex s $pnmfilename");
+system("/usr/bin/snmpset -v2c -c $commstring $ccap 1.3.6.1.4.1.4491.2.1.27.1.3.7.1.1.$ifindex i 1");
+
