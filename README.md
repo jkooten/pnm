@@ -15,7 +15,7 @@ There will be an update once Casa fixes the issue that there is no such thing as
 
 the PNM images will be stored in /var/ww/html/pnm but you can change that if you want offcourse.<br>
 
-# EXAMPLE (i changed the CMTS name and replaced the actual mac address for xxxxxxxxxxxx)<br>
+<b>EXAMPLE (i changed the CMTS name and replaced the actual mac address for xxxxxxxxxxxx)<br></b>
 
 ./pnm-ofdmarxmer-filedecode-v2 /tftpboot/PNMCcapRxMER_CCAP002_xxxxxxxxxxxx_1403405123<br>
 <br>
