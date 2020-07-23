@@ -12,11 +12,12 @@ Just feed the PNM file to the script and it wil decode the file for you conform 
 There is some pretty printing when the script is kicked off.<br>
 Tested agains several CCAP devices (Arris E6000 REL8.0, Casa C100G rel 8.6.2 and Cisco cBR-8 rel ios-xr 16.12.1y/z)<br>
 There will be an update once Casa fixes the issue that there is no such thing as 2kHz subcarrier spacing. for Casa 50kHz spacing is assumed when other not correct values are found in the PNM file.<br>
-
+<br>
 the PNM images will be stored in /var/ww/html/pnm but you can change that if you want offcourse.<br>
-
+<br>
+<br>
 <b>EXAMPLE (i changed the CMTS name and replaced the actual mac address for xxxxxxxxxxxx)<br></b>
-
+<br>
 ./pnm-ofdmarxmer-filedecode-v2 /tftpboot/PNMCcapRxMER_CCAP002_xxxxxxxxxxxx_1403405123<br>
 <br>
 504e4e69 ==> OFDMARxMer<br>
@@ -36,5 +37,5 @@ Last Subcarrier Frequency = 37425000<br>
 There is also a small script to help you do the snmpset commands to get the OfdmaRxMer PNM measurement started.<br>
 pretty straight forward. Just run it and it will do the snmpsets for you.<br>
 <br>
-"./set-pnm-ofdmarxmer-meas <CCAP-NAME> <MODEM MAC> <IFINDEX> <SNMP RW COMMUNITY STRING>"<br>
+./set-pnm-ofdmarxmer-meas CCAP-NAME MODEM-MAC IFINDEX SNMP-RW-COMMUNITY-STRING<br>
 
