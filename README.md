@@ -1,5 +1,9 @@
 # pnm-ofdmarxmer-filedecode-v2
-# dependencies with hexdump, GD::Graph and Data::Hexdump
+
+dependencies with :
+hexdump<br>
+GD::Graph<br>
+Data::Hexdump<br>
 
 A simple perl script that will turn your OfdmaRxMer PNM binary file ino a nice graph with correct(!) data.
  
