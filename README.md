@@ -14,6 +14,7 @@ the PNM images will be stored in /var/ww/html/pnm but you can change that if you
 # EXAMPLE (i changed the CMTS name and replaced the actual mac address for xxxxxxxxxxxx)
 
 ./pnm-ofdmarxmer-filedecode-v2 /tftpboot/PNMCcapRxMER_CCAP002_xxxxxxxxxxxx_1403405123
+
 504e4e69 ==> OFDMARxMer
 Date of PNM Measurememt ==> 2020-06-05 18:12:23
 Interface Index = 34234577
