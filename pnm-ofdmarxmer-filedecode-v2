@@ -1,0 +1,156 @@
+#!/usr/bin/perl
+#
+# startup  jurgen.vankooten@vodafoneziggo.com
+#  - initial release		11-06-2020	v1.0	JvK
+#  - added some usefull stuff	22-07-2020	v1.0	JvK
+#
+#	Just feed the PNM file that is made as an input to this script and it will generate a
+#	PNG file for you. No need to do manual decoding anymore!!
+
+use strict;
+use CGI ':standard';
+use GD::Graph::bars;
+use Data::HexDump;
+use Time::Piece;
+
+my $out;
+my $filetype;
+my $sc;
+my $date;
+my @merarray;
+my @scarray;
+my @combmer;
+my $mdmmac;
+my $realtmstmp;
+my $realindex;
+my $startdata;
+my $enddata;
+my $freqfirstcar;
+my $freqlastcar;
+
+
+if ($#ARGV != 0) {
+ print "Need one argument, \n";
+ print "$0 <pnm-file-name>\n";
+exit;
+}
+
+## HORRIBLE...BACKTICKS....BUT WORKING FOR NOW
+
+my @inputfile = `/usr/bin/hexdump -v -e '1/1 "%02x" " " ' $ARGV[0]`;
+
+## START HANDELING THE DATA
+
+my @merarray=();
+
+foreach my $lijn (@inputfile)	{
+				$lijn =~ s/ +/ /g;
+                                my @subline = split /\ /,$lijn;
+				##	SOME DEFAULT VALUES
+
+				$filetype = join "", $subline[0], $subline[1], $subline[2], $subline[3];
+				my $majvers = $subline[4];
+				my $minvers = $subline[5];
+
+                                my $timestamp = join "", $subline[6], $subline[7], $subline[8], $subline[9];
+                                $realtmstmp = hex($timestamp);
+				$date = localtime($realtmstmp)->strftime('%F %T');
+
+				my $ifindex = join "", $subline[10], $subline[11], $subline[12], $subline[13];
+				$realindex = hex($ifindex);
+
+				print "$filetype ==> OFDMARxMer\n";
+                                print "Date of PNM Measurememt ==> $date\n";
+				print "Interface Index = $realindex\n";
+
+				##	EXTRACTING CCAPCORE ID FROM PNM *** TBD **
+
+				##	EXTRACTING MODEN MAC FROM PNM
+				$mdmmac = join "", $subline[270], $subline[271], $subline[272], $subline[273], $subline[274], $subline[275];
+				print "Modem Mac Address = $mdmmac\n"; 
+
+				## SUBCARRIER 0 FREQUENCY
+				my $subczero = join "", $subline[279], $subline[280], $subline[281], $subline[282];
+				my $realsubczero = hex($subczero);
+				print "Subcarrier 0 frequency = $realsubczero\n";
+
+				## FIRST ACTIVE SUBCARRIER
+				my $firstactcar = join "", $subline[283], $subline[284];
+				my $realfirstactcar = hex($firstactcar);
+				print "FIRST ACTIVE SUBCARRIER = $realfirstactcar\n";
+
+				## SUBCARRIER SPACING
+				my $subcarrierspacing = hex($subline[285]) * 1000 ;
+
+				if ($subcarrierspacing !~ /50000|25000/)	{
+						print "CASA CRAP!!! ASSUMING 50kHz!!\n";
+						$subcarrierspacing = 50000;
+				}
+					
+				print "Subcarrier spacing = $subcarrierspacing Hz\n";
+			
+				##	EXTRACTING AMOUNT OF BYTES DATA
+				my $bytelength = join "", $subline[286], $subline[287], $subline[288], $subline[289];
+				my $realbytelength = hex($bytelength);
+				
+				my $startdata = "290";
+				$enddata = $startdata+$realbytelength;
+
+				#print "startdata = ", $startdata, "\n";
+				#print "enddata = $enddata\n"; 
+				print "Amount Active Subcarriers = $realbytelength\n";
+
+				$freqfirstcar = $realsubczero + ( $subcarrierspacing * $realfirstactcar);
+                                print "First Subcarrier Frequency = $freqfirstcar\n";
+                                $freqlastcar = $realsubczero + ( $subcarrierspacing * ( $realfirstactcar + $realbytelength) );
+				print "Last Subcarrier Frequency = $freqlastcar\n";
+
+				##	PUSH REALDATA IN ARRAY
+
+				foreach my $i ($startdata..$enddata)		{
+						if ($subline[$i] =~ m/^(00|FF|ff)$/i )	{
+							# SKIP
+						}
+						else	{
+						my $data = hex($subline[$i])/4;
+						push (@merarray, $data);
+						my $startf = ($realsubczero + ($realfirstactcar * $subcarrierspacing))/1000000;
+						push (@scarray, $startf);
+						$realfirstactcar++;
+						}
+				}
+				
+				#foreach my $u ($startdata..$enddata)            {
+				#		push (@scarray, $u);
+                                #}
+
+}
+
+my @totalarray = ([@scarray], [@merarray] );
+
+my $width = 2000;
+my $heigth = 500;
+
+my $mygraph = GD::Graph::bars->new( "$width" , "$heigth");
+
+my $filename = join "", "pnm_output_",$mdmmac, "_", $realtmstmp, "_", $realindex;
+
+$mygraph->set(
+    transparent =>  0,
+    x_label     => 'Frequency(MHz)',
+    y_label     => 'MER(dB)',
+    y_max_value => 55,
+    x_label_skip=> 100,
+    title       => "UsOfdmaRxMerPerSubcarrier $mdmmac $date startf=$freqfirstcar stopf=$freqlastcar" ,
+    dclrs	=> [qw(red)],
+    bgclr	=> 'white',
+    boxclr      => 'white',
+) or warn $mygraph->error;
+
+my $myimage = $mygraph->plot(\@totalarray) or die $mygraph->error;
+
+open(PICTURE, "> /var/www/html/pnm/$filename.png") or die("Cannot open file for writing");
+
+binmode PICTURE;
+print PICTURE $myimage->png;
+close PICTURE;
