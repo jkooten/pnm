@@ -21,7 +21,7 @@ the PNM images will be stored in /var/ww/html/pnm but you can change that if you
 ./pnm-ofdmarxmer-filedecode-v2 /tftpboot/PNMCcapRxMER_CCAP002_xxxxxxxxxxxx_1403405123<br>
 <br>
 504e4e69 ==> OFDMARxMer<br>
-Date of PNM Measurememt ==> 2020-06-05 18:12:23<br>
+Date of PNM Measurement ==> 2020-06-05 18:12:23<br>
 Interface Index = 34234577<br>
 Modem Mac Address = xxxxxxxxxxxx<br>
 Subcarrier 0 frequency = 11325000<br>
