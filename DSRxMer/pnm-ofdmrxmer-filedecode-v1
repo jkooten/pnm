@@ -131,7 +131,7 @@ my $filename = join "", "pnm_output_DSRXMer", "_", $mdmmac, "_", $realtmstmp;
 
 $mygraph->set(
     transparent =>  0,
-    x_label     => 'SubCarrier',
+    x_label     => 'Frequency(MHz)',
     y_label     => 'MER(dB)',
     y_max_value => 55,
     x_label_skip=> 100,
