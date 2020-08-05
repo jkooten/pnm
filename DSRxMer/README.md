@@ -21,7 +21,7 @@ EXAMPLE<br>
 ./pnm-ofdmrxmer-filedecode-v1 /tftpboot/pnm/PNMDSMer_e4574007c740_050820201530<br>
 <br>
 504e4d04 ==> OFDM DSRxMer<br>
-Date of PNM Measurememt ==> 2020-08-05 15:31:34<br>
+Date of PNM Measurement ==> 2020-08-05 15:31:34<br>
 Downstream Channel Index = 33<br>
 Modem MAC Address =  e4574007c740<br>
 Subcarrier Zero Frequency = 1019600000<br>
