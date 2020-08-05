@@ -1,0 +1,150 @@
+
+#!/usr/bin/perl
+#
+# startup  jurgen.vankooten@vodafoneziggo.com
+#  - initial release    05-08-2020      v1.0    JvK
+#
+#       Just feed the PNM file that is made as an input to this script and it will generate a
+#       PNG file for you. No need to do manual decoding anymore!!
+#       be ware of script dependencies like GD::Graph
+#
+#       scripts supports until CM-SP-CM-OSSIv3.1-I10. i
+#       As from I11 the Major and Minor Version are introduced in PNM Output.
+#       Once that has dripped down to modem vendors this scripts needs some small updates!
+#
+
+use strict;
+use CGI ':standard';
+use GD::Graph::bars;
+use Time::Piece;
+
+my $out;
+my $filetype;
+my $sc;
+my $date;
+my @merarray;
+my @scarray;
+my @combmer;
+my $mdmmac;
+my $realtmstmp;
+my $realindex;
+my $startdata;
+my $enddata;
+
+if ($#ARGV != 0) {
+ print "Need one argument, \n";
+ print "$0 <pnm-file-name>\n";
+exit;
+}
+
+## HORRIBLE...BACKTICKS....BUT WORKING FOR NOW
+
+my @inputfile = `/usr/bin/hexdump -v -e '1/1 "%02x" " " ' $ARGV[0]`;
+
+## START HANDELING THE DATA
+
+my @merarray=();
+
+foreach my $lijn (@inputfile)   {
+                                $lijn =~ s/ +/ /g;
+                                my @subline = split /\ /,$lijn;
+
+                                ##      SOME DEFAULT VALUES
+                                $filetype = join "", $subline[0], $subline[1], $subline[2], $subline[3];
+
+                                ##      MAJ AND MIN VERSION SUPPORTED AS PER I11 so for now hashed out!!
+                                #my $majvers = $subline[4];
+                                #my $minvers = $subline[5];
+
+                                ##      TIMESTAMP
+                                my $timestamp = join "", $subline[4], $subline[5], $subline[6], $subline[7];
+                                $realtmstmp = hex($timestamp);
+                                $date = localtime($realtmstmp)->strftime('%F %T');
+
+                                ##      DOWNSTREAM CHANNEL ID
+                                my $dschannelid = hex($subline[8]);
+
+                                ##      EXTRACTING MODEN MAC FROM PNM
+                                $mdmmac = join "", $subline[9], $subline[10], $subline[11], $subline[12], $subline[13], $subline[14];
+
+                                ##      SUBCARRIER ZERO FREQUENCY
+                                my $subczerofreq = join "", $subline[15], $subline[16], $subline[17], $subline[18];
+                                my $realsubczerofreq = hex($subczerofreq);
+
+                                ##      FIRST ACTIVE SUBCARRIER
+                                my $firstactsubc = join "", $subline[19], $subline[20];
+                                my $realfirstactsubc = hex($firstactsubc);
+
+                                ##      SUBCARRIER SPACING
+                                my $subcarspacing = hex($subline[21]);
+
+                                ##      EXTRACTING AMOUNT OF BYTES DATA
+                                my $bytelength = join "", $subline[22], $subline[23], $subline[24], $subline[25];
+                                my $realbytelength = hex($bytelength);
+
+                                ##      SIZE OFDM BLOCK
+                                my $ofdmblocksize = ($realbytelength*50000)/1000000;
+
+                                print "$filetype ==> OFDM DSRxMer\n";
+                                print "Date of PNM Measurememt ==> $date\n";
+                                print "Downstream Channel Index = $dschannelid\n";
+                                print "Modem MAC Address =  $mdmmac\n";
+                                print "Subcarrier Zero Frequency = $realsubczerofreq\n";
+                                print "First Active Subcarrier = $realfirstactsubc\n";
+                                print "Subcarrier Spacing = $subcarspacing kHz\n";
+                                print "Size OFDM Block = $ofdmblocksize MHz\n";
+
+                                my $startdata = "25";
+                                $enddata = $startdata+$realbytelength;
+
+                                print "startdata = ", $startdata, "\n";
+                                print "enddata = $enddata\n";
+
+                                ##      PUSH REALDATA IN ARRAY
+
+                                foreach my $i ($startdata..$enddata)            {
+                                                if ($subline[$i] =~ m/^(00|FF|ff)$/i )  {
+                                                        # SKIP
+                                                }
+                                                else    {
+                                                my $data = hex($subline[$i])/4;
+                                                push (@merarray, $data);
+                                                my $startf = ($realsubczerofreq + ($realfirstactsubc * ($subcarspacing*1000)))/1000000;
+                                                push (@scarray, $startf);
+                                                $realfirstactsubc++;
+                                                }
+                                }
+
+}
+
+my @totalarray = ([@scarray], [@merarray] );
+
+my $width = 3815;
+my $heigth = 500;
+
+#my $width = $enddata - 240;
+#print "Width=$width\n";
+
+my $mygraph = GD::Graph::bars->new( "$width" , "$heigth");
+
+my $filename = join "", "pnm_output_DSRXMer", "_", $mdmmac, "_", $realtmstmp;
+
+$mygraph->set(
+    transparent =>  0,
+    x_label     => 'SubCarrier',
+    y_label     => 'MER(dB)',
+    y_max_value => 55,
+    x_label_skip=> 100,
+    title       => "OfdmDSRxMer $mdmmac $date" ,
+    dclrs       => [qw(red)],
+    bgclr       => 'white',
+    boxclr      => 'white',
+) or warn $mygraph->error;
+
+my $myimage = $mygraph->plot(\@totalarray) or die $mygraph->error;
+
+open(PICTURE, "> /var/www/html/pnm/$filename.png") or die("Cannot open file for writing");
+
+binmode PICTURE;
+print PICTURE $myimage->png;
+close PICTURE;
