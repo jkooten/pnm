@@ -86,7 +86,7 @@ foreach my $lijn (@inputfile)   {
                                 my $ofdmblocksize = ($realbytelength*50000)/1000000;
 
                                 print "$filetype ==> OFDM DSRxMer\n";
-                                print "Date of PNM Measurememt ==> $date\n";
+                                print "Date of PNM Measurement ==> $date\n";
                                 print "Downstream Channel Index = $dschannelid\n";
                                 print "Modem MAC Address =  $mdmmac\n";
                                 print "Subcarrier Zero Frequency = $realsubczerofreq\n";
