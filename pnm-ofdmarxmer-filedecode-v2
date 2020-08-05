@@ -60,7 +60,7 @@ foreach my $lijn (@inputfile)	{
 				$realindex = hex($ifindex);
 
 				print "$filetype ==> OFDMARxMer\n";
-                                print "Date of PNM Measurememt ==> $date\n";
+                                print "Date of PNM Measurement ==> $date\n";
 				print "Interface Index = $realindex\n";
 
 				##	EXTRACTING CCAPCORE ID FROM PNM *** TBD **
