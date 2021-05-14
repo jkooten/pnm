@@ -1,0 +1,144 @@
+#!/usr/bin/perl
+#
+# startup  jurgen.vankooten@vodafoneziggo.com
+#  - initial release	06-08-2020	v1.0	JvK
+#
+#	Just feed the PNM file that is made as an input to this script and it will generate a
+#	PNG file for you. No need to do manual decoding anymore!!
+#	be ware of script dependencies like GD::Graph 
+#	
+#	scripts supports until CM-SP-CM-OSSIv3.1-I10. i
+#	As from I11 the Major and Minor Version are introduced in PNM Output. 
+#	Once that has dripped down to modem vendors this scripts needs some small updates!
+#
+
+use strict;
+use CGI ':standard';
+use GD::Graph::bars;
+use Time::Piece;
+
+my $out;
+my $filetype;
+my $sc;
+my $date;
+my @merarray;
+my @scarray;
+my @combmer;
+my $mdmmac;
+my $realtmstmp;
+my $realindex;
+my $startdata;
+my $enddata;
+
+if ($#ARGV != 0) {
+ print "Need one argument, \n";
+ print "$0 <pnm-file-name>\n";
+exit;
+}
+
+## HORRIBLE...BACKTICKS....BUT WORKING FOR NOW
+
+my @inputfile = `/usr/bin/hexdump -v -e '1/1 "%02x" " " ' $ARGV[0]`;
+
+## START HANDELING THE DATA
+
+my @merarray=();
+
+foreach my $lijn (@inputfile)	{
+				$lijn =~ s/ +/ /g;
+                                my @subline = split /\ /,$lijn;
+	
+				##	SOME DEFAULT VALUES
+				$filetype = join "", $subline[0], $subline[1], $subline[2], $subline[3];
+
+				## 	MAJ AND MIN VERSION SUPPORTED AS PER I11 so for now hashed out!!
+				#my $majvers = $subline[4];
+				#my $minvers = $subline[5];
+
+				##	TIMESTAMP
+                                my $timestamp = join "", $subline[4], $subline[5], $subline[6], $subline[7];
+                                $realtmstmp = hex($timestamp);
+				$date = localtime($realtmstmp)->strftime('%F %T');
+		
+				##	EXTRACTING MODEN MAC FROM PNM
+				$mdmmac = join "", $subline[8], $subline[9], $subline[10], $subline[11], $subline[12], $subline[13];
+
+				##	SYMMETRY...at least...i think
+				# my $symmetry = join "", $subline[14], $subline[15], $subline[16], $subline[17];
+				my $symmetry = hex($subline[14]);
+
+				##	LENGTH DWELL COUNT IN BYTES
+				my $lengthdwellcount = join "", $subline[15], $subline[16], $subline[17],$subline[18];
+				my $reallengthdwellcount = hex($lengthdwellcount);
+
+				##	DWELLCOUNTVALUE
+				my $dwellvalue = join "", $subline[19], $subline[20], $subline[21],$subline[22];
+				my $realdwellvalue = hex($dwellvalue);
+	
+				##	LENGTH HIT COUNT
+				my $hitlength = join "", $subline[23], $subline[24], $subline[25], $subline[26];
+				my $realhitlength = hex($hitlength);
+
+				print "$filetype ==> OFDM CMDSHistogram\n";
+                                print "Date of PNM Measurememt ==> $date\n";
+				print "Modem MAC Address =  $mdmmac\n";
+				print "Symmetry = $symmetry\n";
+				print "LENGTH DWELL COUNT  = $reallengthdwellcount\n";
+				print "Dwell Count Value = $realdwellvalue\n";
+				print "Length Hit Count = $realhitlength\n";
+
+				my $startdata = "27";
+				$enddata = ($startdata+$realhitlength);
+
+				print "startdata = ", $startdata, "\n";
+				print "enddata = $enddata\n"; 
+
+				##	PUSH REALDATA IN ARRAY
+
+                                my $startf = 1;
+
+				my $i = $startdata;
+				while ($i <= $enddata)	{
+					my $bindata = join "", $subline[$i], $subline[$i + 1], $subline[$i + 2], $subline[$i + 3];
+					my $realbindata = hex($bindata);
+					push (@merarray, $realbindata);
+					$i=$i + 4;
+                                                
+					push (@scarray, $startf);
+                                       	$startf++;
+                                }
+
+
+}
+
+my @totalarray = ([@scarray], [@merarray] );
+
+my $width = 3815;
+my $heigth = 1000;
+
+#my $width = $enddata - 240;
+#print "Width=$width\n";
+
+my $mygraph = GD::Graph::bars->new( "$width" , "$heigth");
+
+my $filename = join "", "pnm_output_CmDsHist", "_", $mdmmac, "_", $realtmstmp;
+
+$mygraph->set(
+    transparent =>  0,
+    x_label     => 'BINS',
+    y_label     => 'VALUE',
+    y_max_value => 4000000,
+    x_label_skip=> 25,
+    title       => "OfdmCmDsHist $mdmmac $date" ,
+    dclrs	=> [qw(red)],
+    bgclr	=> 'white',
+    boxclr      => 'white',
+) or warn $mygraph->error;
+
+my $myimage = $mygraph->plot(\@totalarray) or die $mygraph->error;
+
+open(PICTURE, "> /var/www/html/pnm/$filename.png") or die("Cannot open file for writing");
+
+binmode PICTURE;
+print PICTURE $myimage->png;
+close PICTURE;
