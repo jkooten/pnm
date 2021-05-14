@@ -17,7 +17,6 @@ my $out;
 my $filetype;
 my $sc;
 my $date;
-my @merarray;
 my @scarray;
 my @combmer;
 my $mdmmac;
