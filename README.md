@@ -11,10 +11,12 @@ Cable Modem Downstream Histogram PNM decode is also ready but needs some more wo
 
 Plans for future:
 * rewright the code to python for all you devops guys out there ;)
-* build influxdb withn all pnm data
+* build influxdb and import all pnm data.
+* schedule regular polling intervals for PNM.
 * grafphing in grafana
-* PMA like analytics
+* PMA like analytics based on the data.
 
 But....time is always a thing when you also have a filltime day job :)
 
-if you have certain questions or needs please feel free to contact me. 
+if you have certain questions or needs please feel free to contact me.
+Also if you need some help coping with 4G/5G interference in your network...i can help in more then 1 way
