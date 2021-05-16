@@ -9,5 +9,12 @@ everything in perl for now. planning to rework this to python but no hurry on my
 I am working on Usptream Triggered Spectrum Capture but implementation on CCAP/CMTS is not that sophisticated and output is bit more complex (and time is lacking).
 Cable Modem Downstream Histogram PNM decode is also ready but needs some more work. i can share this on request. 
 
+Plans for future:
+* rewright the code to python for all you devops guys out there ;)
+* build influxdb withn all pnm data
+* grafphing in grafana
+* PMA like analytics
+
+But....time is always a thing when you also have a filltime day job :)
 
 if you have certain questions or needs please feel free to contact me. 
