@@ -1,4 +1,4 @@
-# pnm-ofdmrxmer-filedecode-v1
+# OFDM DOWNSTREAM RX MER -- pnm-ofdmrxmer-filedecode-v1
 
 dependencies with :<br>
 hexdump<br>
