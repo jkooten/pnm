@@ -1,4 +1,4 @@
-# PNM -- PROACIVE NETWORK MAINTENANCE
+# PNM -- PROACTIVE NETWORK MAINTENANCE
 Docsis 3.1 PNM measurements. Mainly OFDM Downstream RX MER and OFDMA Upstream RX MER.
 
 I was struggeling in the lab to get this 3.1 PNM visual. We did not have a good tool in lab environment to make it visible. 
