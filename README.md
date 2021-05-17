@@ -13,7 +13,7 @@ Plans for future:
 * rewright the code to python for all you devops guys out there ;)
 * build influxdb and import all pnm data.
 * schedule regular polling intervals for PNM.
-* grafphing in grafana
+* graphing in grafana
 * PMA like analytics based on the data.
 
 But....time is always a thing when you also have a filltime day job :)
