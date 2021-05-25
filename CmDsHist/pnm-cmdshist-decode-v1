@@ -60,7 +60,7 @@ my @merarray=();
 
 foreach my $lijn (@inputfile)	{
 				$lijn =~ s/ +/ /g;
-                                my @subline = split /\ /,$lijn;
+                my @subline = split /\ /,$lijn;
 	
 				##	SOME DEFAULT VALUES
 				$filetype = join "", $subline[0], $subline[1], $subline[2], $subline[3];
@@ -70,8 +70,8 @@ foreach my $lijn (@inputfile)	{
 				#my $minvers = $subline[5];
 
 				##	TIMESTAMP
-                                my $timestamp = join "", $subline[4], $subline[5], $subline[6], $subline[7];
-                                $realtmstmp = hex($timestamp);
+                my $timestamp = join "", $subline[4], $subline[5], $subline[6], $subline[7];
+                $realtmstmp = hex($timestamp);
 				$date = localtime($realtmstmp)->strftime('%F %T');
 		
 				##	EXTRACTING MODEN MAC FROM PNM
@@ -94,7 +94,7 @@ foreach my $lijn (@inputfile)	{
 				my $realhitlength = hex($hitlength);
 
 				print "$filetype ==> OFDM CMDSHistogram\n";
-                                print "Date of PNM Measurememt ==> $date\n";
+                print "Date of PNM Measurememt ==> $date\n";
 				print "Modem MAC Address =  $mdmmac\n";
 				print "Symmetry = $symmetry\n";
 				print "LENGTH DWELL COUNT  = $reallengthdwellcount\n";
@@ -109,7 +109,7 @@ foreach my $lijn (@inputfile)	{
 
 				##	PUSH REALDATA IN ARRAY
 
-                                my $startf = 1;
+                my $startf = 1;
 
 				my $i = $startdata;
 				while ($i <= $enddata)	{
@@ -119,8 +119,8 @@ foreach my $lijn (@inputfile)	{
 					$i=$i + 4;
                                                 
 					push (@scarray, $startf);
-                                       	$startf++;
-                                }
+                    $startf++;
+                }
 
 
 }

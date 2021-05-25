@@ -60,15 +60,15 @@ my @merarray=();
 
 foreach my $lijn (@inputfile)	{
 				$lijn =~ s/ +/ /g;
-                                my @subline = split /\ /,$lijn;
+                my @subline = split /\ /,$lijn;
 				##	SOME DEFAULT VALUES
 
 				$filetype = join "", $subline[0], $subline[1], $subline[2], $subline[3];
 				my $majvers = $subline[4];
 				my $minvers = $subline[5];
 
-                                my $timestamp = join "", $subline[6], $subline[7], $subline[8], $subline[9];
-                                $realtmstmp = hex($timestamp);
+                my $timestamp = join "", $subline[6], $subline[7], $subline[8], $subline[9];
+                $realtmstmp = hex($timestamp);
 				$date = localtime($realtmstmp)->strftime('%F %T');
 
 				my $ifindex = join "", $subline[10], $subline[11], $subline[12], $subline[13];
@@ -116,8 +116,8 @@ foreach my $lijn (@inputfile)	{
 				print "Amount Active Subcarriers = $realbytelength\n";
 
 				$freqfirstcar = $realsubczero + ( $subcarrierspacing * $realfirstactcar);
-                                print "First Subcarrier Frequency = $freqfirstcar\n";
-                                $freqlastcar = $realsubczero + ( $subcarrierspacing * ( $realfirstactcar + $realbytelength) );
+                print "First Subcarrier Frequency = $freqfirstcar\n";
+                $freqlastcar = $realsubczero + ( $subcarrierspacing * ( $realfirstactcar + $realbytelength) );
 				print "Last Subcarrier Frequency = $freqlastcar\n";
 
 				##	PUSH REALDATA IN ARRAY

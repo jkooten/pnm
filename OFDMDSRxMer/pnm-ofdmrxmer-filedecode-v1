@@ -1,4 +1,3 @@
-g
 #!/usr/bin/perl
 #
 # startup  jvkooten@gmail.com
@@ -11,8 +10,6 @@ g
 #       scripts supports until CM-SP-CM-OSSIv3.1-I10. i
 #       As from I11 the Major and Minor Version are introduced in PNM Output.
 #       Once that has dripped down to modem vendors this scripts needs some small updates!
-#
-#
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
